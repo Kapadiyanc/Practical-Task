@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+
+        <!-- Bootstrap CSS CDN -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    </head>
+    <body class="bg-light">
+
+        <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+            <div class="card" style="width: 100%; max-width: 400px;">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Login</h2>
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" name="email" placeholder="Email" required />
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" name="password" placeholder="Password" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        <p>Don't have an account? <a href="/signup.html" class="text-decoration-none">Sign Up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS and Popper.js CDN -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+        <script>
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                const response = await fetch('http://localhost:3000/api/user/login', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Login successful');
+                    localStorage.setItem('authToken', result.token);
+                    window.location.href = '/booking.html'; // Redirect to booking page
+                } else {
+                    alert('Login failed: ' + result.message);
+                }
+            });
+        </script>
+
+    </body>
+</html>

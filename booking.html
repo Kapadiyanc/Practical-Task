@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+</head>
+<body class="bg-light py-5">
+
+    <div class="container">
+        <h2 class="text-center mb-4">Booking Form</h2>
+
+        <form id="booking-form" class="card p-4 shadow-sm">
+            <div class="mb-3">
+                <label for="customerName" class="form-label">Customer Name</label>
+                <input type="text" id="customerName" name="customerName" class="form-control" placeholder="Customer Name" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="customerEmail" class="form-label">Customer Email</label>
+                <input type="email" id="customerEmail" name="customerEmail" class="form-control" placeholder="Customer Email" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="bookingDate" class="form-label">Booking Date</label>
+                <input type="date" id="bookingDate" name="bookingDate" class="form-control" placeholder="Booking Date" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="bookingType" class="form-label">Booking Type</label>
+                <select id="bookingType" name="bookingType" class="form-select" required>
+                    <option value="Full Day">Full Day</option>
+                    <option value="Half Day">Half Day</option>
+                    <option value="Custom">Custom</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="bookingSlotWrapper">
+                <label for="bookingSlot" class="form-label">Booking Slot</label>
+                <select id="bookingSlot" name="bookingSlot" class="form-select" required>
+                    <option value="First Half">First Half</option>
+                    <option value="Second Half">Second Half</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="bookingTimeWrapper">
+                <label for="bookingTime" class="form-label">Booking Time</label>
+                <input type="time" id="bookingTime" name="bookingTime" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Submit Booking</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            const authToken = localStorage.getItem('authToken');
+            console.log(authToken);
+
+            const response = await fetch('http://localhost:3000/api/booking/booking', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': authToken
+                },
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Booking successful!');
+            } else {
+                alert('Booking failed: ' + result.message);
+            }
+        });
+
+        // Logic for showing/hiding "Booking Slot" and "Booking Time"
+        document.getElementById('bookingType').addEventListener('change', function() {
+            const bookingType = this.value;
+
+            if (bookingType === 'Half Day') {
+                document.getElementById('bookingSlotWrapper').style.display = 'block';
+                document.getElementById('bookingTimeWrapper').style.display = 'none';
+            } else if (bookingType === 'Custom') {
+                document.getElementById('bookingSlotWrapper').style.display = 'none';
+                document.getElementById('bookingTimeWrapper').style.display = 'block';
+            } else {
+                document.getElementById('bookingSlotWrapper').style.display = 'none';
+                document.getElementById('bookingTimeWrapper').style.display = 'none';
+            }
+        });
+
+        // Trigger change event to set default visibility
+        document.getElementById('bookingType').dispatchEvent(new Event('change'));
+    </script>
+
+    <!-- Bootstrap JS and Popper.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+</body>
+</html>
